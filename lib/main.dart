@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  setupLocator();
   runApp(MyApp());
 }
 
@@ -21,7 +22,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: ChangeNotifierProvider<ConnectivityManager>(
-        create: (context) => ConnectivityManager(),
+        create: (context) => locator<ConnectivityManager>(),
         child: Consumer<ConnectivityManager>(
           builder: (context, value, child) => Scaffold(
             body: Center(
