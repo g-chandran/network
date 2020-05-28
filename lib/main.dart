@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +24,17 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  Connectivity _connectivity = Connectivity();
+  StreamSubscription<ConnectivityResult> _streamSubscription;
+
+  @override
+  void initState() {
+    checkNetwork();
+    _streamSubscription = _connectivity.onConnectivityChanged
+        .listen((event) => updateConnection(event));
+    super.initState();
+  }
+
   Status status = Status.Offline;
 
   Future checkNetwork() async {
@@ -41,6 +54,30 @@ class _HomePageState extends State<HomePage> {
       setState(() {
         status = Status.Mobile;
       });
+    }
+  }
+
+  Future updateConnection(ConnectivityResult result) async {
+    switch (result) {
+      case ConnectivityResult.mobile:
+        setState(() {
+          status = Status.Mobile;
+        });
+        break;
+      case ConnectivityResult.wifi:
+        setState(() {
+          status = Status.Wifi;
+        });
+        break;
+      case ConnectivityResult.none:
+        setState(() {
+          status = Status.Offline;
+        });
+        break;
+      default:
+        setState(() {
+          status = Status.Offline;
+        });
     }
   }
 
