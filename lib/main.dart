@@ -2,6 +2,8 @@ import 'package:connectivity_test/connectivity_manager.dart';
 import 'package:connectivity_test/locator.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:connectivity/connectivity.dart';
+import 'dart:async';
 
 void main() {
   setupLocator();
@@ -17,7 +19,26 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  @override
+  void initState() {
+    _connectivitySubscription = Connectivity().onConnectivityChanged.listen(
+        (event) => locator<ConnectivityManager>().updateConnection(event));
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
