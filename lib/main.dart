@@ -7,8 +7,6 @@ void main() {
   runApp(MyApp());
 }
 
-enum Status { Mobile, Wifi, Offline }
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -24,35 +22,34 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String connectivityString = 'Offline';
   Connectivity _connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult> _streamSubscription;
+  // StreamSubscription<ConnectivityResult> _streamSubscription;
 
   @override
   void initState() {
     checkNetwork();
-    _streamSubscription = _connectivity.onConnectivityChanged
+    _connectivity.onConnectivityChanged
         .listen((event) => updateConnection(event));
     super.initState();
   }
-
-  Status status = Status.Offline;
 
   Future checkNetwork() async {
     var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.mobile) {
       print('mobile');
       setState(() {
-        status = Status.Mobile;
+        connectivityString = 'Mobile';
       });
     } else if (connectivityResult == ConnectivityResult.wifi) {
       print('wifi');
       setState(() {
-        status = Status.Wifi;
+        connectivityString = 'Wi-Fi';
       });
     } else {
-      print('No network');
+      print('Offline');
       setState(() {
-        status = Status.Mobile;
+        connectivityString = 'Offline';
       });
     }
   }
@@ -61,22 +58,22 @@ class _HomePageState extends State<HomePage> {
     switch (result) {
       case ConnectivityResult.mobile:
         setState(() {
-          status = Status.Mobile;
+          connectivityString = 'Mobile';
         });
         break;
       case ConnectivityResult.wifi:
         setState(() {
-          status = Status.Wifi;
+          connectivityString = 'Wi-Fi';
         });
         break;
       case ConnectivityResult.none:
         setState(() {
-          status = Status.Offline;
+          connectivityString = 'Offline';
         });
         break;
       default:
         setState(() {
-          status = Status.Offline;
+          connectivityString = 'Offline';
         });
     }
   }
@@ -94,9 +91,7 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.green,
                 height: 20,
                 width: 100,
-                child: Text(status == Status.Offline
-                    ? 'Offline'
-                    : status == Status.Mobile ? 'Mobile' : 'Wi-Fi'),
+                child: Text(connectivityString),
               ),
               Container(
                   child: RaisedButton(
